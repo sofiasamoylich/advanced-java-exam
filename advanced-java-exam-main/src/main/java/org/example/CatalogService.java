@@ -21,24 +21,24 @@ public class CatalogService {
 
     public void registerMedia(MediaItem item) {
         if (item.title().length() < 3) {
-            log.error("Validation failed: Title too short [{}]", item.title());
-            throw new MediaCatalogException("Title must be at least 3 chars");
+            log.error("Валідація не вдалась: Занадто коротке імʼя [{}]", item.title());
+            throw new MediaCatalogException("Має бути щонайменше 3 символи");
         }
         repository.save(item);
-        log.info("Media registered: {} (Status: {})", item.title(), item.status());
+        log.info("Медіа зареєстоване: {} (Статус: {})", item.title(), item.status());
     }
 
     public void updateStatus(String id, ContentStatus newStatus) {
         MediaItem item = repository.findById(id)
-                .orElseThrow(() -> new MediaCatalogException("Item not found"));
+                .orElseThrow(() -> new MediaCatalogException("Айтем не знайдений"));
 
         if (!item.status().canTransitionTo(newStatus)) {
-            log.warn("Illegal status transition attempted: {} -> {}", item.status(), newStatus);
-            throw new LifecycleException("Cannot transition from " + item.status() + " to " + newStatus);
+            log.warn("Нелегальна спроба дозвілу статусу: {} -> {}", item.status(), newStatus);
+            throw new LifecycleException("Не може перейти з  " + item.status() + " до " + newStatus);
         }
 
         repository.save(item.withStatus(newStatus));
-        log.info("Status updated for item {}: {}", id, newStatus);
+        log.info("Оновнений статус {}: {}", id, newStatus);
     }
 
     // Stream-запит (R1)
